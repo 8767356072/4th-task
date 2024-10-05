@@ -1,0 +1,124 @@
+Here’s how to implement the required visualizations using Pandas, Matplotlib, and Seaborn for the freeCodeCamp forum page views dataset.
+
+Step-by-Step Implementation
+
+1. Import Required Libraries
+
+
+2. Load and Clean the Data
+
+
+3. Define the Visualization Functions
+
+
+4. Save and Return the Images
+
+
+
+Here's the complete code:
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Step 1: Load the data
+df = pd.read_csv("fcc-forum-pageviews.csv", index_col='date', parse_dates=True)
+
+# Step 2: Clean the data
+df = df[(df['value'] >= df['value'].quantile(0.025)) & (df['value'] <= df['value'].quantile(0.975))]
+
+# Step 3: Define the draw_line_plot function
+def draw_line_plot():
+    plt.figure(figsize=(12, 6))
+    plt.plot(df.index, df['value'], color='blue')
+    plt.title('Daily freeCodeCamp Forum Page Views 5/2016-12/2019')
+    plt.xlabel('Date')
+    plt.ylabel('Page Views')
+    plt.xticks(rotation=45)
+    plt.grid(visible=True)
+    plt.tight_layout()
+    plt.savefig('line_plot.png')
+    return plt
+
+# Step 4: Define the draw_bar_plot function
+def draw_bar_plot():
+    # Create a new DataFrame to group the data by year and month
+    df_bar = df.copy()
+    df_bar['year'] = df_bar.index.year
+    df_bar['month'] = df_bar.index.month_name()
+    
+    # Group by year and month, then calculate the mean
+    df_bar = df_bar.groupby(['year', 'month'])['value'].mean().unstack()
+
+    # Order the months
+    month_order = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    df_bar = df_bar[month_order]
+
+    # Draw the bar plot
+    df_bar.plot(kind='bar', figsize=(12, 6))
+    plt.title('Average Daily Page Views per Month')
+    plt.xlabel('Years')
+    plt.ylabel('Average Page Views')
+    plt.legend(title='Months')
+    plt.tight_layout()
+    plt.savefig('bar_plot.png')
+    return plt
+
+# Step 5: Define the draw_box_plot function
+def draw_box_plot():
+    # Create a DataFrame for box plots
+    df_box = df.copy()
+    df_box['year'] = df_box.index.year
+    df_box['month'] = df_box.index.month
+
+    # Create the box plots
+    plt.figure(figsize=(12, 6))
+
+    # Year-wise Box Plot
+    plt.subplot(1, 2, 1)
+    sns.boxplot(x='year', y='value', data=df_box)
+    plt.title('Year-wise Box Plot (Trend)')
+    plt.xlabel('Year')
+    plt.ylabel('Page Views')
+
+    # Month-wise Box Plot
+    plt.subplot(1, 2, 2)
+    sns.boxplot(x='month', y='value', data=df_box, order=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])
+    plt.title('Month-wise Box Plot (Seasonality)')
+    plt.xlabel('Month')
+    plt.ylabel('Page Views')
+
+    plt.tight_layout()
+    plt.savefig('box_plot.png')
+    return plt
+
+# Call the functions to create and save the plots
+draw_line_plot()
+draw_bar_plot()
+draw_box_plot()
+plt.show()
+
+Explanation of Each Step:
+
+1. Load the Data: The data is loaded from the CSV file, setting the 'date' column as the index and parsing dates.
+
+
+2. Clean the Data: We filter out the top and bottom 2.5% of page views to remove outliers.
+
+
+3. Draw Line Plot: A line plot is created using Matplotlib, showing daily page views over time.
+
+
+4. Draw Bar Plot: The average daily page views are grouped by year and month and plotted as a bar chart.
+
+
+5. Draw Box Plot: Two box plots are created to show the distribution of page views by year and by month.
+
+
+
+Saving Plots
+
+Each plot is saved as a PNG file in the current directory. The plt.show() function displays all the plots after they are created.
+
+You can run this script in your environment to visualize the dataset as required. Make sure to have the dataset available in the same directory or provide the correct path to it.
+
